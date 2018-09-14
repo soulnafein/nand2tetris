@@ -16,5 +16,15 @@ CHIP DMux4Way {
     OUT a, b, c, d;
 
     PARTS:
-    // Put your code here:
+      Not(in=sel[1], out=notFirstBit);
+      Not(in=sel[0], out=notSecondBit);
+      And(a=notFirstBit, b=notSecondBit, out=channelA);
+      And(a=notFirstBit, b=sel[0], out=channelB);
+      And(a=sel[1], b=notSecondBit, out=channelC);
+      And(a=sel[1], b=sel[0], out=channelD);
+      And(a=in, b=channelA, out=a);
+      And(a=in, b=channelB, out=b);
+      And(a=in, b=channelC, out=c);
+      And(a=in, b=channelD, out=d);
+
 }
