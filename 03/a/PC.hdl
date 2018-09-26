@@ -16,5 +16,11 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+
+    Inc16(in=loop, out=loopPlusOne);
+    Mux16(a=loop, b=loopPlusOne, sel=inc, out=step1);
+    Mux16(a=step1, b=in, sel=load, out=step2);
+    Mux16(a=step2, b=false, sel=reset, out=newValue);
+
+    Register(in=newValue, out=out, out=loop, load=true);
 }
