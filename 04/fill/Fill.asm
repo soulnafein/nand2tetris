@@ -12,3 +12,61 @@
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
+
+@KBD
+D = A - 1
+@lastPixel
+M = D
+
+(START)
+  @KBD
+  D = M
+  @KEYPRESSED
+  D; JNE
+  @NOKEYPRESSED
+  0; JMP
+
+  (KEYPRESSED)
+  @0
+  D = !A
+  @R3
+  M = D
+  @FILLSCREEN
+  0; JMP
+
+  (NOKEYPRESSED)
+  @0
+  D = A
+  @R3
+  M = D
+  @FILLSCREEN
+  0; JMP
+
+  (FILLSCREEN)
+
+  // filling pixel
+  @SCREEN
+  D = A
+  @R1
+  M = D
+
+  (LOOP)
+  @R3
+  D = M
+
+  @R1
+  A = M
+  M = D
+
+  @R1
+  M = M + 1
+  D = M
+
+  @lastPixel
+  D = D - M
+
+  @START
+  D; JGT
+
+  @LOOP
+  0; JMP
