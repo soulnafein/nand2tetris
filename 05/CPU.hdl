@@ -39,5 +39,42 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+
+    DMux(in=true, sel=instruction[15], a=aInstruction, b=cInstruction);
+    Or(a=aluToA, b=aInstruction, out=loadA);
+    Mux16(a=aluOut, b[0..14]=instruction[0..14], sel=aInstruction, out=valueForA);
+    ARegister(in=valueForA, load=loadA, out=aIntoMux, out[0..14]=addressM);
+    DRegister(in=aluOut, load=aluToD, out=dOut);
+    And(a=cInstruction, b=instruction[12], out=ca);
+    And(a=cInstruction, b=instruction[11], out=c1);
+    And(a=cInstruction, b=instruction[10], out=c2);
+    And(a=cInstruction, b=instruction[9], out=c3);
+    And(a=cInstruction, b=instruction[8], out=c4);
+    And(a=cInstruction, b=instruction[7], out=c5);
+    And(a=cInstruction, b=instruction[6], out=c6);
+    And(a=cInstruction, b=instruction[5], out=aluToA);
+    And(a=cInstruction, b=instruction[4], out=aluToD);
+    And(a=cInstruction, b=instruction[3], out=writeM);
+    And(a=cInstruction, b=instruction[2], out=j1);
+    And(a=cInstruction, b=instruction[1], out=j2);
+    And(a=cInstruction, b=instruction[0], out=j3);
+
+    Mux16(a=aIntoMux, b=inM, sel=ca, out=mOrAOut);
+    ALU(y=mOrAOut, x=dOut, zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6, out=aluOut, out=outM, zr=zr, ng=ng);
+
+    And(a=j1, b=ng, out=j1AndNg);
+    And(a=j2, b=zr, out=j2AndZr);
+    Not(in=ng, out=notNg);
+    Not(in=zr, out=notZr);
+    And(a=notNg, b=notZr, out=gt);
+    And(a=j3, b=gt, out=j3AndGt);
+
+    Or(a=j1AndNg, b=j2AndZr, out=firstPartShouldJump);
+    Or(a=firstPartShouldJump, b=j3AndGt, out=shouldJump);
+    Not(in=shouldJump, out=shouldIncrease);
+
+
+    PC(in=aIntoMux, load=shouldJump, inc=shouldIncrease, reset=reset, out[0..14]=pc);
+
+
 }
